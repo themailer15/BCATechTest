@@ -18,8 +18,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentSong = MutableLiveData<Song?>()
     val currentSong: LiveData<Song?> get() = _currentSong
 
+    private val _isSongPlayed = MutableLiveData<Boolean>()
+    val isSongPlayed: LiveData<Boolean> get() = _isSongPlayed
+
     private val _isPlaying = MutableLiveData<Boolean>()
     val isPlaying: LiveData<Boolean> get() = _isPlaying
+
+    private val _isCurrentSongBarVisible = MutableLiveData<Boolean>()
+    val isCurrentSongBarVisible: LiveData<Boolean> get() = _isCurrentSongBarVisible
 
     lateinit var mediaPlayer: MediaPlayer
     private var currentIndex = 0
@@ -28,6 +34,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         _songs.value = songRepo.getSongs()
         _currentSong.value = _songs.value?.getOrNull(currentIndex)
         _isPlaying.value = false
+        _isSongPlayed.value = false
+        _isCurrentSongBarVisible.value = false
+    }
+
+    fun selectSong(song: Song) {
+        // Find the selected song index
+        currentIndex = _songs.value?.indexOf(song) ?: 0
+        playSong()
     }
 
     fun playOrPause() {
@@ -64,6 +78,7 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         mediaPlayer = MediaPlayer.create(getApplication(), _currentSong.value?.fileResId ?: return)
         mediaPlayer.start()
         _isPlaying.value = true
+        _isSongPlayed.value = true
     }
 
     override fun onCleared() {
@@ -73,3 +88,4 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
+
