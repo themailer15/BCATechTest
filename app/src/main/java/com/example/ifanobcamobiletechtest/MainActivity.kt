@@ -2,11 +2,12 @@ package com.example.ifanobcamobiletechtest
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnNext: ImageButton
     private lateinit var btnPrevious: ImageButton
     private lateinit var currentSongBar: ConstraintLayout
+    private lateinit var searchBar: EditText
 
     private val musicViewModel: MusicViewModel by viewModels()
 
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         btnNext = findViewById(R.id.btnNext)
         btnPrevious = findViewById(R.id.btnPrevious)
         currentSongBar = findViewById(R.id.currentSongBar)
+        searchBar = findViewById(R.id.searchBar)
 
         // Mengatur RecyclerView
         val songAdapter = SongAdapter(musicViewModel.songs.value ?: emptyList()) { selectedSong ->
@@ -48,6 +51,11 @@ class MainActivity : AppCompatActivity() {
         musicViewModel.isSongPlayed.observe(this, Observer { isSongPlayed ->
             currentSongBar.visibility = if (isSongPlayed == true) View.VISIBLE else View.GONE
         })
+
+        searchBar.addTextChangedListener {
+            val query = it.toString()
+            songAdapter.filter(query)
+        }
 
         btnPlayPause.setOnClickListener {
             musicViewModel.playOrPause()

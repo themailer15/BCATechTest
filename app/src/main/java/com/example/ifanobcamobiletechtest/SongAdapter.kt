@@ -7,7 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class SongAdapter(private val songs: List<Song>, private val onItemClick: (Song) -> Unit) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter(private var songs: List<Song>, private val onSongSelected: (Song) -> Unit) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+
+    private var onSearchSong = songs
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.view_holder_song, parent, false)
@@ -19,22 +21,33 @@ class SongAdapter(private val songs: List<Song>, private val onItemClick: (Song)
         holder.bind(song)
     }
 
-    override fun getItemCount(): Int = songs.size
+    override fun getItemCount(): Int {
+        return songs.size
+    }
+
+    fun updateSongs(filteredSongs: List<Song>) {
+        songs = filteredSongs
+        notifyDataSetChanged()
+    }
+
+    fun filter(query: String) {
+        val filteredList = if (query.isEmpty()) {
+            onSearchSong
+        } else {
+            onSearchSong.filter { song ->
+                song.title.contains(query, ignoreCase = true) || song.artist.contains(query, ignoreCase = true)
+            }
+        }
+        updateSongs(filteredList)
+    }
 
     inner class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val songTitle: TextView = itemView.findViewById(R.id.songTitle)
-        private val songArtist: TextView = itemView.findViewById(R.id.songArtist)
-
         fun bind(song: Song) {
-            songTitle.text = song.title
-            songArtist.text = song.artist
-
-            // Set click listener on the item
+            itemView.findViewById<TextView>(R.id.songTitle).text = song.title
+            itemView.findViewById<TextView>(R.id.songArtist).text = song.artist
             itemView.setOnClickListener {
-                onItemClick(song)  // Callback to pass the selected song
+                onSongSelected(song)
             }
         }
     }
 }
-
-
