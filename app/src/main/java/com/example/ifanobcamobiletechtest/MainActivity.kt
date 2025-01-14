@@ -1,12 +1,14 @@
 package com.example.ifanobcamobiletechtest
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.get
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,10 +36,14 @@ class MainActivity : AppCompatActivity() {
         currentSongBar = findViewById(R.id.currentSongBar)
         searchBar = findViewById(R.id.searchBar)
 
-        // Mengatur RecyclerView
-        val songAdapter = SongAdapter(musicViewModel.songs.value ?: emptyList()) { selectedSong ->
-            musicViewModel.selectSong(selectedSong)  // Pass the selected song to the ViewModel
-        }
+        //musicViewModel.currentIndex
+
+        val songAdapter = SongAdapter(
+            musicViewModel.songs.value ?: emptyList(),
+            { selectedSong -> musicViewModel.selectSong(selectedSong) },
+            musicViewModel.currentIndexLiveData,
+            musicViewModel
+        )
         songRecyclerView.layoutManager = LinearLayoutManager(this)
         songRecyclerView.adapter = songAdapter
 
@@ -46,6 +52,7 @@ class MainActivity : AppCompatActivity() {
                 if (isPlaying == true) android.R.drawable.ic_media_pause
                 else android.R.drawable.ic_media_play
             )
+            songAdapter.notifyDataSetChanged()
         })
 
         musicViewModel.isSongPlayed.observe(this, Observer { isSongPlayed ->

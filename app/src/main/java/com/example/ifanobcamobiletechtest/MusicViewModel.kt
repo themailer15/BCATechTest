@@ -2,6 +2,7 @@ package com.example.ifanobcamobiletechtest
 
 import android.app.Application
 import android.media.MediaPlayer
+import android.util.Log
 import android.widget.Button
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,7 +12,6 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
 
     private val songRepo = SongRepo()
 
-    // State data
     private val _songs = MutableLiveData<List<Song>>()
     val songs: LiveData<List<Song>> get() = _songs
 
@@ -24,23 +24,25 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private val _isPlaying = MutableLiveData<Boolean>()
     val isPlaying: LiveData<Boolean> get() = _isPlaying
 
-    private val _isCurrentSongBarVisible = MutableLiveData<Boolean>()
-    val isCurrentSongBarVisible: LiveData<Boolean> get() = _isCurrentSongBarVisible
+    private val _currentIndex = MutableLiveData<Int>()
+    val currentIndexLiveData: LiveData<Int> get() = _currentIndex
 
     lateinit var mediaPlayer: MediaPlayer
-    private var currentIndex = 0
+    var currentIndex = -1
+
 
     init {
         _songs.value = songRepo.getSongs()
         _currentSong.value = _songs.value?.getOrNull(currentIndex)
         _isPlaying.value = false
         _isSongPlayed.value = false
-        _isCurrentSongBarVisible.value = false
+        _currentIndex.value = currentIndex // Inisialisasi LiveData
     }
 
     fun selectSong(song: Song) {
-        // Find the selected song index
         currentIndex = _songs.value?.indexOf(song) ?: 0
+        _currentIndex.value = currentIndex // Update LiveData
+        Log.d("Index", currentIndex.toString())
         playSong()
     }
 
@@ -49,13 +51,16 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
             mediaPlayer.pause()
             _isPlaying.value = false
         } else {
-            playSong()
+            mediaPlayer.start()
+            _isPlaying.value = true
         }
     }
 
     fun nextSong() {
         if (currentIndex < (_songs.value?.size ?: 0) - 1) {
             currentIndex++
+            _currentIndex.value = currentIndex // Update LiveData
+            Log.d("IndexNext", currentIndex.toString())
             playSong()
         }
     }
@@ -63,6 +68,8 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     fun previousSong() {
         if (currentIndex > 0) {
             currentIndex--
+            _currentIndex.value = currentIndex // Update LiveData
+            Log.d("IndexPrev", currentIndex.toString())
             playSong()
         }
     }
@@ -70,13 +77,14 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     private fun playSong() {
         _currentSong.value = _songs.value?.getOrNull(currentIndex)
 
-        // Reset and initialize MediaPlayer
+
         if (this::mediaPlayer.isInitialized) {
             mediaPlayer.reset()
         }
 
         mediaPlayer = MediaPlayer.create(getApplication(), _currentSong.value?.fileResId ?: return)
         mediaPlayer.start()
+
         _isPlaying.value = true
         _isSongPlayed.value = true
     }
@@ -88,4 +96,3 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 }
-

@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Ifanov/BINUS/Magang/BCA/ASG/IfanoBcaMobileTechTest/app/src/main/res/drawable/current_song_bar_bg.xml" value="0.22" />
+        <entry key="..\:/Ifanov/BINUS/Magang/BCA/ASG/IfanoBcaMobileTechTest/app/src/main/res/drawable/selected_song_effect.xml" value="0.152" />
         <entry key="..\:/Ifanov/BINUS/Magang/BCA/ASG/IfanoBcaMobileTechTest/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Ifanov/BINUS/Magang/BCA/ASG/IfanoBcaMobileTechTest/app/src/main/res/layout/view_holder_song.xml" value="0.18541666666666667" />
       </map>
