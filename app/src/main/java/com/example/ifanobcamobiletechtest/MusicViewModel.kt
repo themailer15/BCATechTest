@@ -59,8 +59,9 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
     fun nextSong() {
         if (currentIndex < (_songs.value?.size ?: 0) - 1) {
             currentIndex++
-            _currentIndex.value = currentIndex // Update LiveData
+            _currentIndex.value = currentIndex
             Log.d("IndexNext", currentIndex.toString())
+            Log.d("IndexNext2", _songs.value?.size.toString())
             playSong()
         }
     }
@@ -83,6 +84,10 @@ class MusicViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         mediaPlayer = MediaPlayer.create(getApplication(), _currentSong.value?.fileResId ?: return)
+        mediaPlayer.setOnCompletionListener {
+            nextSong()
+        }
+
         mediaPlayer.start()
 
         _isPlaying.value = true
